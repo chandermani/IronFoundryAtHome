@@ -1,0 +1,388 @@
+﻿body
+{
+    font-size: 14px;
+    line-height:21px;
+    font-family: Segoe UI, Helvetica, Garuda, Arial, Sans-Serif;
+    margin: 0;
+    padding: 0;
+    color: #696969;
+    background: #196bac url(/images/wallpaper.png) top center no-repeat fixed;
+}
+
+a:link
+{
+    color: #034af3;
+    text-decoration: underline;
+}
+
+a:visited
+{
+    color: #505abc;
+}
+
+a:hover
+{
+    color: #1d60ff;
+    text-decoration: none;
+}
+
+a:active
+{
+    color: #12eb87;
+}
+
+p, ul
+{
+    margin-bottom: 20px;
+    line-height: 1.6em;
+}
+
+/* PRIMARY LAYOUT ELEMENTS   
+----------------------------------------------------------*/
+.page
+{
+    width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+    z-index: 3;
+    margin-bottom:40px;
+}
+
+#header
+{
+    width: 960px;
+    position: relative;
+    margin-bottom: 0px;
+    color: #000;
+    padding: 0;
+    background-color: #ffffff;
+    border-top: 5px solid #C9CACC;
+}
+
+#main
+{
+    position: relative;
+    padding: 10px 30px 15px;
+    background-color: #ffffff;
+    /*border-top: 0px 30px 15px; */
+    border-top: 5px solid #c9cacc;
+}
+
+#footer
+{
+    color: #999;
+    padding: 20px 40px 0;
+    text-align: left;
+    line-height: normal;
+    margin-top: 20px;
+    margin-left: -30px;
+    margin-right: -30px;
+    border-top: 1px solid #DDD;
+    font-size: 11px;
+}
+
+/* TAB MENU   
+----------------------------------------------------------*/
+#menucontainer
+{    
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: -5px;
+    height: 52px;
+    margin-bottom: 40px;   
+}
+
+ul#menu
+{
+    /*border-bottom: 1px #5c87b2 solid;*/
+    padding: 0 0 2px;
+    position: relative;
+    margin: 0;
+    text-align: left;
+}
+
+ul#menu li
+{
+    display: inline;
+    list-style: none;
+}
+
+ul#menu li a
+{
+    margin: 0 12px 0 12px;
+    padding: 22px 0 2px 0;
+    font-size: 24px;
+    text-transform: lowercase;
+    text-decoration: none;
+    line-height: 2.8em;
+    color: #888;
+    border-top: 5px solid transparent;
+}
+
+ul#menu li a:hover
+{
+    background-color: #fff;
+    text-decoration: none;
+    color: #4a91ac;
+    border-top-color: #4076ba;
+}
+
+ul#menu li.selected a
+{
+    background-color: #fff;
+    color: #000;
+}
+
+ul#menu li.current a
+{
+    background-color: #fff;
+    color: black;
+    border-top-color: #4076ba;
+}
+
+/* FORM LAYOUT ELEMENTS   
+----------------------------------------------------------*/
+
+input[type="text"] 
+{
+    border: 1px solid #CCC;
+}
+
+input.site-arrowboxcta 
+{
+	background: url("../images/home-welcome-arrowwhite.png") no-repeat 95% rgb(141, 187, 64); 
+	padding: 8px 45px 10px 15px; 
+	border: 1px solid rgb(255, 255, 255); 
+	color: rgb(255, 255, 255); 
+	text-transform: lowercase; 
+	line-height: normal; 
+	font-size: 25px; 
+	font-weight: 100; 
+	display: block; 
+	-webkit-transition-property: background-color; 
+	-webkit-transition-duration: 2s; 
+	-moz-transition-property: background-color; 
+	-moz-transition-duration: 2s; 
+	-moz-transition-timing-function: ease-out; 
+	-o-transition-property: background-color; 
+	-o-transition-duration: 2s;
+}
+
+input.site-arrowboxcta:hover 
+{
+	background-color: rgb(151, 200, 64); 
+	-webkit-transition-property: background-color; 
+	-webkit-transition-duration: 0; 
+	-moz-transition-property: background-color; 
+	-moz-transition-duration: 0; 
+	-o-transition-property: background-color; 
+	-o-transition-duration: 0;
+}
+
+
+/* MISC  
+----------------------------------------------------------*/
+
+.field-validation-error
+{
+    color: #ff0000;
+}
+
+.field-validation-valid
+{
+    display: none;
+}
+
+.input-validation-error
+{
+    border: 1px solid #ff0000;
+    background-color: #ffeeee;
+}
+
+.validation-summary-errors
+{
+    font-weight: bold;
+    color: #ff0000;
+}
+
+.validation-summary-valid
+{
+    display: none;
+}
+
+.display-label,
+.editor-label,
+.display-field,
+.editor-field
+{
+    margin: 0.5em 0;
+}
+
+.text-box
+{
+    width: 30em;
+}
+
+.text-box.multi-line
+{
+    height: 6.5em;
+}
+
+.tri-state
+{
+    width: 6em;
+}
+
+div#myMap
+{
+    position: relative;
+    height: 400px;
+    margin-top: 90px;
+}
+
+div#entryDiv
+{
+    margin-top: 30px;
+    margin-bottom: 90px;
+}
+
+div#validatorDiv
+{
+    margin-top: -20px;
+    margin-bottom: 134px;
+}
+
+div#latlong
+{
+    margin-top: 10px;
+}
+
+div#statusHeader
+{
+    overflow: auto;
+}
+
+div#statusGreeting
+{
+    margin-top: 14px;
+}
+
+.centered, .tableHeading
+{
+    text-align: center;
+}
+
+.tableHeading
+{
+    font-weight: bold;
+}
+
+.right_justified
+{
+    float: right;
+}
+
+.left_justified
+{
+    float: left;
+}
+
+.validator
+{
+    color: Red;
+    font-weight: bold;
+    margin-right: 85px;
+}
+
+.nameField
+{
+    width: 180px;
+    color: Black;
+    margin-left: 5px;
+    margin-right: 10px;
+}
+
+.latlongField
+{
+    width: 60px;
+    color: Black;
+    background-color: #E1E1E1;
+    margin-left: 5px;
+}
+
+.progress_table
+{
+    width: 70%;
+    margin: 30px auto 40px;
+    clear: both;
+}
+
+.progress_row
+{
+    height: 45px;
+}
+
+.progress_name
+{
+    float: left;
+}
+
+.progress_pct
+{
+    float: right;
+    margin-top: 10px;
+}
+
+.outerbar, .innerbar, .bartext
+{
+    width: 100px;
+    height: 20px;
+}
+
+.outerbar
+{
+    position: relative;
+    background-color: #c0c0c0;
+}
+
+.innerbar
+{
+    background-color: #4a91ac;
+}
+
+.bartext
+{
+    position: absolute;
+    color: white;
+    text-align: center;
+}
+
+.codeFont
+{
+    font-family: "Courier New" , Courier, monospace;
+}
+
+.errorBox
+{
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 2px solid #ff0000;
+}
+
+.indentedCode
+{
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.truncate
+{
+    overflow: hidden;
+}
+
+.horizontalDivider
+{
+    width: 80%;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}

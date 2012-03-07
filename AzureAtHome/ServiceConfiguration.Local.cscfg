@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceConfiguration serviceName="AzureAtHome" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="1" osVersion="*">
+  <Role name="AtHomeWebRole">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="DataConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="PollingInterval" value="1" />
+      <Setting name="ClientEXE" value="FoldingClientMock.exe" />
+      <Setting name="PingServer" value="http://localhost" />
+    </ConfigurationSettings>
+  </Role>
+</ServiceConfiguration>

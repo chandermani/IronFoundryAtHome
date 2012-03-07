@@ -1,0 +1,45 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="AtHomeWebRole.SiteMaster" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1" runat="server">
+    <title>
+        <asp:ContentPlaceHolder ID="TitleContent" runat="server" />
+    </title>
+    <link href="/Styles/Site.css" rel="stylesheet" type="text/css" />
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.7.1.min.js" type="text/javascript"></script>
+    <asp:ContentPlaceHolder ID="HeadContent" runat="server">
+    </asp:ContentPlaceHolder>
+    <script type="text/javascript">
+        //Update the "current" list item in the nav menu
+        $(document).ready(function () {
+            //Clear all current
+            $(".current").removeClass();
+            //Get current path
+            var url = $(location).attr('pathname');
+            $('#this_url').html('<strong>' + url + '</strong>');
+            //Find current path in nav menu & make it current
+            $('ul#menu').find('a[href="' + url + '"]').parent().addClass("current");
+        });
+    </script>
+</head>
+<body class="page-">
+    <div class="page">
+        <div id="logo-container" style="text-align: left">
+            <img src="/images/athome_w_azure.png" style="margin: 10px 0px 0px 0px;" />
+        </div>
+        <div id="main">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+            <div id="footer">
+                <p>
+                    <a href="http://www.microsoft.com" target="_blank">
+                        <img src="/images/microsoft.png" align="right" border="0" alt="Microsoft Corporation" /></a>©
+                    2012 Microsoft Corporation. All Rights Reserved. Read our <a href="http://privacy.microsoft.com/en-us/fullnotice.mspx"
+                        target="_blank">privacy policy</a>.
+                    <br />
+                    Question or Comment? <a href="mailto:athomewithazure@microsoft.com">Contact us.</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
