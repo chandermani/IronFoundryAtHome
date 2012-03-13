@@ -26,7 +26,7 @@ namespace AtHomeWebRole
             panels.ToList().ForEach(c => c.Visible = false);
 
             // set some literal values that may appear on the pageL 
-            litConnString.Text = RoleEnvironment.GetConfigurationSettingValue("DataConnectionString");
+            litConnString.Text = ApplicationSettings.DataConnectionString;
 
             try
             {
@@ -34,7 +34,7 @@ namespace AtHomeWebRole
                 if (Request.QueryString["reset"] != null)
                 {
                     CloudStorageAccount cloudStorageAccount =
-                        CloudStorageAccount.Parse(RoleEnvironment.GetConfigurationSettingValue("DataConnectionString"));
+                        CloudStorageAccount.Parse(ApplicationSettings.DataConnectionString);
                     cloudStorageAccount.CreateCloudTableClient().DeleteTableIfExist("client");
                     cloudStorageAccount.CreateCloudTableClient().DeleteTableIfExist("workunit");
                 } 
@@ -97,7 +97,7 @@ namespace AtHomeWebRole
         {
             // create/confirm client table exists
             CloudStorageAccount cloudStorageAccount =
-                CloudStorageAccount.Parse(RoleEnvironment.GetConfigurationSettingValue("DataConnectionString"));
+                CloudStorageAccount.Parse(ApplicationSettings.DataConnectionString);
             CloudTableClient cloudClient = cloudStorageAccount.CreateCloudTableClient();
             cloudClient.CreateTableIfNotExist("client");
 

@@ -16,7 +16,7 @@ namespace AtHomeWebRole
 
             // ensure workunit table exists
             CloudStorageAccount cloudStorageAccount =
-                CloudStorageAccount.Parse(RoleEnvironment.GetConfigurationSettingValue("DataConnectionString"));
+                CloudStorageAccount.Parse(ApplicationSettings.DataConnectionString);
             CloudTableClient cloudClient = cloudStorageAccount.CreateCloudTableClient();
 
             if (cloudClient.DoesTableExist("workunit"))

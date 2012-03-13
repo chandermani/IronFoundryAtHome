@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Security;
 using System.Web.SessionState;
+using Microsoft.WindowsAzure;
 
 namespace AtHomeWebRole
 {
@@ -12,7 +13,6 @@ namespace AtHomeWebRole
 
         void Application_Start(object sender, EventArgs e)
         {
-            // Code that runs on application startup
 
         }
 

@@ -43,7 +43,7 @@ namespace AtHomeWebRole
             {
                 // access client table in Azure storage
                 CloudStorageAccount cloudStorageAccount =
-                    CloudStorageAccount.Parse(RoleEnvironment.GetConfigurationSettingValue("DataConnectionString"));
+                    CloudStorageAccount.Parse(ApplicationSettings.DataConnectionString);
                 var ctx = new ClientDataContext(
                     cloudStorageAccount.TableEndpoint.ToString(),
                     cloudStorageAccount.Credentials);
@@ -185,7 +185,7 @@ namespace AtHomeWebRole
         {
 
             string url = string.Format("{0}/ping",
-                RoleEnvironment.GetConfigurationSettingValue("PingServer"));
+                ApplicationSettings.PingServer);
 
             string data = string.Format("username={0}&passkey={1}&instanceid={2}&lat={3}&long={4}&foldingname={5}&foldingtag={6}&foldingprogress={7}&deploymentid={8}&servername={9}&downloadtime={10}",
                 HttpUtility.UrlEncode(Identity.UserName),
@@ -225,7 +225,7 @@ namespace AtHomeWebRole
         public void UpdateLocalStatus(FoldingClientStatus status)
         {
             var cloudStorageAccount =
-                CloudStorageAccount.Parse(RoleEnvironment.GetConfigurationSettingValue("DataConnectionString"));
+                CloudStorageAccount.Parse(ApplicationSettings.DataConnectionString);
 
             // ensure workunit table exists
             var cloudClient = new CloudTableClient(
@@ -270,14 +270,18 @@ namespace AtHomeWebRole
             LocalResource foldingIo = RoleEnvironment.GetLocalResource("ClientStorage");
             String targetPath = string.Format(@"{0}client", foldingIo.RootPath);
             String targetExecutable = string.Format(@"{0}client\{1}", foldingIo.RootPath,
-                RoleEnvironment.GetConfigurationSettingValue("ClientEXE"));
+                ApplicationSettings.ClientEXE);
 
             // get progress polling interval (default to 15 minutes)
             Int32 pollingInterval;
-            if (!Int32.TryParse(
-                RoleEnvironment.GetConfigurationSettingValue("PollingInterval"),
-                out pollingInterval))
+            try
+            {
+                pollingInterval = ApplicationSettings.PollingInterval;
+            }
+            catch
+            {
                 pollingInterval = 15;
+            }
 
             // 
             // setup process
