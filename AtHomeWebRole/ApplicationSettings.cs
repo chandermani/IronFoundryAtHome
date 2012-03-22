@@ -12,7 +12,7 @@ namespace AtHomeWebRole
         private static AppSettingsProvider _settingsProvider;
         static ApplicationSettings()
         {
-            if (RoleEnvironment.IsAvailable)
+            if (RunningOnAzure)
                 _settingsProvider = new AzureSettingsProvider();
         }
 
@@ -44,6 +44,44 @@ namespace AtHomeWebRole
                 return _settingsProvider.GetSetting("PingServer");
             }
         }
+
+        private static bool? _runningOnAzure;
+        public static bool RunningOnAzure
+        {
+            get
+            {
+                try
+                {
+                    if (_runningOnAzure.HasValue)
+                        return _runningOnAzure.Value;
+                    _runningOnAzure = RoleEnvironment.IsAvailable;
+                }
+                catch
+                {
+                    _runningOnAzure = false;
+                }
+                return _runningOnAzure.Value;
+            }
+        }
+
+        private static string _instanceId;
+
+        public static string InstanceId
+        {
+            get
+            {
+                if (RunningOnAzure)
+                {
+                    return RoleEnvironment.CurrentRoleInstance.Id;
+                }
+                else
+                {
+                    return Environment.MachineName;
+                }
+                return _instanceId;
+            }
+        }
+        
     }
 
     public abstract class AppSettingsProvider

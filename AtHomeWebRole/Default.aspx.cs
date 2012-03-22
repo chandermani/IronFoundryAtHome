@@ -16,7 +16,12 @@ namespace AtHomeWebRole
         // Other folding teams can modify team number and passkey below
         private const String TEAM_NUMBER = "184157";
         private const String PASSKEY = "";
-
+        private IAtHomeClientDataRepository _clientDataRepo;
+        public _Default()
+        {
+            if (ApplicationSettings.RunningOnAzure)
+                _clientDataRepo = new AzureAtHomeClientDataRepository(ApplicationSettings.DataConnectionString);
+        }
         protected void Page_Load(object sender, EventArgs e)
         {
             // hide all the panels
@@ -33,14 +38,11 @@ namespace AtHomeWebRole
                 // backdoor to reset the client table
                 if (Request.QueryString["reset"] != null)
                 {
-                    CloudStorageAccount cloudStorageAccount =
-                        CloudStorageAccount.Parse(ApplicationSettings.DataConnectionString);
-                    cloudStorageAccount.CreateCloudTableClient().DeleteTableIfExist("client");
-                    cloudStorageAccount.CreateCloudTableClient().DeleteTableIfExist("workunit");
+                    _clientDataRepo.Clear();
                 } 
 
                 // if there's a record in client table, redirect to status page
-                if (FoldingClient.GetClientInformation() != null)
+                if (FoldingClientFactory.GetFoldingClient().Identity!= null)
                     Response.Redirect("/Status.aspx", true);
 
                 if (!IsPostBack)
@@ -96,33 +98,17 @@ namespace AtHomeWebRole
         protected void cbStart_Click(object sender, EventArgs e)
         {
             // create/confirm client table exists
-            CloudStorageAccount cloudStorageAccount =
-                CloudStorageAccount.Parse(ApplicationSettings.DataConnectionString);
-            CloudTableClient cloudClient = cloudStorageAccount.CreateCloudTableClient();
-            cloudClient.CreateTableIfNotExist("client");
-
-            // if table exists
-            if (cloudClient.DoesTableExist("client"))
-            {
-                // create a new client info record to persist to table storage
-                ClientInformation clientInfo = new ClientInformation(
+            ClientInformation clientInfo = new ClientInformation(
                             txtName.Text,
                             PASSKEY,
                             TEAM_NUMBER,
                             Double.Parse(txtLatitudeValue.Value),
                             Double.Parse(txtLongitudeValue.Value),
                             Request.ServerVariables["SERVER_NAME"]);
+            _clientDataRepo.Save(clientInfo);
+            // redirect to the status page
+            Response.Redirect("/Status.aspx");
 
-                // add client info record
-                var ctx = new ClientDataContext(
-                   cloudStorageAccount.TableEndpoint.ToString(),
-                   cloudStorageAccount.Credentials);
-                ctx.AddObject("client", clientInfo);
-                ctx.SaveChanges();
-
-                // redirect to the status page
-                Response.Redirect("/Status.aspx");
-            }
         }
     }
 }

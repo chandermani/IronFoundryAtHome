@@ -48,16 +48,18 @@ namespace AtHomeWebRole
             {
                 try
                 {
-                    ClientInformation clientInfo = FoldingClient.GetClientInformation();
+                    ClientInformation clientInfo = FoldingClientFactory.GetFoldingClient().Identity;
                     if (clientInfo != null)
                     {
-                        FoldingClient client = new FoldingClient(clientInfo);
+                        var localAzureStorage = RoleEnvironment.GetLocalResource("ClientStorage");
+                        FoldingClient client = FoldingClientFactory.GetFoldingClient();
                         client.Launch();
                         break;
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    System.Diagnostics.Trace.TraceError(ex.Message);
                 }
                 Thread.Sleep(30000);
             }

@@ -35,37 +35,16 @@ namespace AtHomeWebRole
 
     public class FoldingClient
     {
-        private ClientInformation Identity { get; set; }
-        public static ClientInformation GetClientInformation()
+        private IAtHomeClientDataRepository _clientDataRepo;
+        public ClientInformation Identity { get; private set; }
+        public DriveStorageDetails StorageToUse { get; private set; }
+
+        public FoldingClient(DriveStorageDetails driveStorageToUse,IAtHomeClientDataRepository repositoryToStoreData)
         {
-            ClientInformation clientInfo = null;
-            try
-            {
-                // access client table in Azure storage
-                CloudStorageAccount cloudStorageAccount =
-                    CloudStorageAccount.Parse(ApplicationSettings.DataConnectionString);
-                var ctx = new ClientDataContext(
-                    cloudStorageAccount.TableEndpoint.ToString(),
-                    cloudStorageAccount.Credentials);
-
-                // return the first (and only) record or nothing
-                if (cloudStorageAccount.CreateCloudTableClient().DoesTableExist("client"))
-                    clientInfo = ctx.Clients.FirstOrDefault<ClientInformation>();
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceWarning(String.Format("Exception when accessing client data: {0} | {1}", ex.Message, ex.StackTrace));
-                clientInfo = null;
-
-                throw;
-            }
-
-            return clientInfo;
-        }
-
-        public FoldingClient(ClientInformation clientInfo)
-        {
-            this.Identity = clientInfo;
+            
+            this.StorageToUse = driveStorageToUse;
+            _clientDataRepo = repositoryToStoreData;
+            this.Identity = _clientDataRepo.LoadClientInformation();
         }
 
         public void WriteConfigFile()
@@ -74,8 +53,7 @@ namespace AtHomeWebRole
 "[settings]{2}username={0}{2}team={1}{2}asknet=no{2}machineid=1{2}bigpackets=big{2}local=1{2}{3}[http]{2}active=no{2}host=localhost{2}port=8080{2}usereg=no{2}[clienttype]{2}memory=1024{2}type=0{2}";
 
             // get local file storage for configuration file
-            LocalResource foldingIo = RoleEnvironment.GetLocalResource("ClientStorage");
-            String targetPath = String.Format(@"{0}client\client.cfg", foldingIo.RootPath);
+            String targetPath = String.Format(@"{0}client\client.cfg", StorageToUse.RootPath);
 
             // write the config file
             using (StreamWriter sw = System.IO.File.CreateText(targetPath))
@@ -92,8 +70,7 @@ namespace AtHomeWebRole
             FoldingClientStatus status = new FoldingClientStatus();
 
             // get local file storage for configuration file
-            LocalResource foldingIo = RoleEnvironment.GetLocalResource("ClientStorage");
-            String targetPath = String.Format(@"{0}client\unitinfo.txt", foldingIo.RootPath);
+            String targetPath = String.Format(@"{0}client\unitinfo.txt", StorageToUse.RootPath);
 
             // check for the status file
             if (System.IO.File.Exists(targetPath))
@@ -190,7 +167,7 @@ namespace AtHomeWebRole
             string data = string.Format("username={0}&passkey={1}&instanceid={2}&lat={3}&long={4}&foldingname={5}&foldingtag={6}&foldingprogress={7}&deploymentid={8}&servername={9}&downloadtime={10}",
                 HttpUtility.UrlEncode(Identity.UserName),
                 Identity.PassKey,
-                RoleEnvironment.CurrentRoleInstance.Id,
+                ApplicationSettings.InstanceId,
                 Identity.Latitude,
                 Identity.Longitude,
                 HttpUtility.UrlEncode(status.Name),
@@ -226,27 +203,14 @@ namespace AtHomeWebRole
         {
             var cloudStorageAccount =
                 CloudStorageAccount.Parse(ApplicationSettings.DataConnectionString);
-
-            // ensure workunit table exists
-            var cloudClient = new CloudTableClient(
-                cloudStorageAccount.TableEndpoint.ToString(),
-                cloudStorageAccount.Credentials);
-            cloudClient.CreateTableIfNotExist("workunit");
-
-            // select info for given workunit
-            var ctx = new ClientDataContext(
-                    cloudClient.BaseUri.ToString(),
-                    cloudClient.Credentials);
-            var workUnit = (from w in ctx.WorkUnits.ToList<WorkUnit>()
-                            where w.PartitionKey == RoleEnvironment.CurrentRoleInstance.Id &&
-                              w.RowKey == w.MakeKey(status.Name, status.Tag, status.DownloadTime)
-                            select w).FirstOrDefault<WorkUnit>();
-
+            
+            WorkUnit workUnit = _clientDataRepo.GetWorkUnit(ApplicationSettings.InstanceId, WorkUnit.MakeKey(status.Name, status.Tag, status.DownloadTime));
+            
             // if it's a new one, add it
             if (workUnit == null)
             {
-                workUnit = new WorkUnit(status.Name, status.Tag, status.DownloadTime, RoleEnvironment.CurrentRoleInstance.Id) { Progress = status.Progress, StartTime = DateTime.UtcNow };
-                ctx.AddObject("workunit", workUnit);
+                workUnit = new WorkUnit(status.Name, status.Tag, status.DownloadTime, ApplicationSettings.InstanceId) { Progress = status.Progress, StartTime = DateTime.UtcNow };
+                _clientDataRepo.Save(workUnit);
             }
 
             // otherwise, update it
@@ -255,9 +219,8 @@ namespace AtHomeWebRole
                 workUnit.Progress = status.Progress;
                 if (workUnit.Progress == 100)
                     workUnit.CompleteTime = DateTime.UtcNow;
-                ctx.UpdateObject(workUnit);
+                _clientDataRepo.Update(workUnit);
             }
-            ctx.SaveChanges();
         }
 
         public void Launch()
@@ -267,9 +230,8 @@ namespace AtHomeWebRole
             WriteConfigFile();
 
             // get path to the Folding@home client application
-            LocalResource foldingIo = RoleEnvironment.GetLocalResource("ClientStorage");
-            String targetPath = string.Format(@"{0}client", foldingIo.RootPath);
-            String targetExecutable = string.Format(@"{0}client\{1}", foldingIo.RootPath,
+            String targetPath = string.Format(@"{0}client", StorageToUse.RootPath);
+            String targetExecutable = string.Format(@"{0}client\{1}", StorageToUse.RootPath,
                 ApplicationSettings.ClientEXE);
 
             // get progress polling interval (default to 15 minutes)
@@ -339,9 +301,39 @@ namespace AtHomeWebRole
 
                     // re-check client table to make sure there's still a record there, if not, that's
                     // the cue to stop the folding process
-                    this.Identity = GetClientInformation();
+                    this.Identity = _clientDataRepo.LoadClientInformation();
                 }
             }
         }
+    }
+
+    public class FoldingClientFactory
+    {
+        private static FoldingClient _client;
+        public static FoldingClient GetFoldingClient()
+        {
+            if (_client != null) return _client;
+            if (ApplicationSettings.RunningOnAzure)
+            {
+                LocalResource resource = RoleEnvironment.GetLocalResource("ClientStorage");
+                _client= new FoldingClient(new DriveStorageDetails()
+                                                                {
+                                                                    Name = resource.Name,
+                                                                    RootPath = resource.RootPath
+                                                                },
+                                                               new AzureAtHomeClientDataRepository(ApplicationSettings.DataConnectionString));
+            }
+            else
+            {
+                _client = new FoldingClient(new DriveStorageDetails()
+                                                                {
+                                                                    Name="TEMP",
+                                                                    RootPath=Path.GetTempPath(),
+                                                                },
+                                                                new RavenDBAtHomeClientDataRepository());
+            }
+            return _client;
+        }
+
     }
 }

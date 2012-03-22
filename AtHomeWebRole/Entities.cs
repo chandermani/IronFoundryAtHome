@@ -55,7 +55,7 @@ namespace Entities
             this.RowKey = MakeKey(this.Name, this.Tag, this.DownloadTime);
         }
 
-        public String MakeKey(String n, String t, String d)
+        public static String MakeKey(String n, String t, String d)
         {
             return n + "|" + t + "|" + d;
         }

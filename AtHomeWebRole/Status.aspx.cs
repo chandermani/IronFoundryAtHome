@@ -9,10 +9,11 @@ namespace AtHomeWebRole
 {
     public partial class Status : System.Web.UI.Page
     {
+        private FoldingClient _foldingClient;
         protected void Page_Load(object sender, EventArgs e)
         {
-            var clientInfo = FoldingClient.GetClientInformation();
-            litName.Text = clientInfo != null ? clientInfo.UserName : "Hello, unidentifiable user";
+            _foldingClient = FoldingClientFactory.GetFoldingClient();
+            litName.Text = _foldingClient.Identity != null ? _foldingClient.Identity.UserName : "Hello, unidentifiable user";
 
             // ensure workunit table exists
             CloudStorageAccount cloudStorageAccount =
