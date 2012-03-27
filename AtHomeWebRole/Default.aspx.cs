@@ -114,15 +114,10 @@ namespace AtHomeWebRole
             {
                 Task task = Task.Factory.StartNew(() =>
                      {
-                         try
-                         {
+                         
                              FoldingClient client = FoldingClientFactory.CreateFoldingClient();
                              client.Launch();
-                         }
-                         catch (Exception ex)
-                         {
-                             System.Diagnostics.Trace.TraceError(ex.Message);
-                         }
+
                      });
             }
             Response.Redirect("/Status.aspx");

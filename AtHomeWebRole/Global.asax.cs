@@ -29,15 +29,9 @@ namespace AtHomeWebRole
             FoldingClient client = FoldingClientFactory.CreateFoldingClient();
             Task task = Task.Factory.StartNew(() =>
             {
-                try
-                {
                     if (client.Identity == null) return;
                     client.Launch();
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Trace.TraceError(ex.Message);
-                }
+                
             });
         }
 
