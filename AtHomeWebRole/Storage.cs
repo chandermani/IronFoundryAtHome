@@ -12,9 +12,4 @@ namespace AtHomeWebRole
         public string Name { get; set; }
         public string RootPath { get; set; }
     }
-
-   
-
-
-
 }
