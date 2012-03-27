@@ -173,7 +173,7 @@ namespace AtHomeWebRole
                 HttpUtility.UrlEncode(status.Name),
                 HttpUtility.UrlEncode(status.Tag),
                 status.Progress,
-                RoleEnvironment.DeploymentId,
+                GetMachineID(),
                 Identity.ServerName,
                 HttpUtility.UrlEncode(status.DownloadTime)
                 );
@@ -199,11 +199,16 @@ namespace AtHomeWebRole
             }
         }
 
+        private static string GetMachineID()
+        {
+            if (ApplicationSettings.RunningOnAzure)
+                return RoleEnvironment.DeploymentId;
+            else
+                return Environment.MachineName;
+        }
+
         public void UpdateLocalStatus(FoldingClientStatus status)
         {
-            var cloudStorageAccount =
-                CloudStorageAccount.Parse(ApplicationSettings.DataConnectionString);
-            
             WorkUnit workUnit = _clientDataRepo.GetWorkUnit(ApplicationSettings.InstanceId, WorkUnit.MakeKey(status.Name, status.Tag, status.DownloadTime));
             
             // if it's a new one, add it
@@ -309,14 +314,12 @@ namespace AtHomeWebRole
 
     public class FoldingClientFactory
     {
-        private static FoldingClient _client;
-        public static FoldingClient GetFoldingClient()
+        public static FoldingClient CreateFoldingClient()
         {
-            if (_client != null) return _client;
             if (ApplicationSettings.RunningOnAzure)
             {
                 LocalResource resource = RoleEnvironment.GetLocalResource("ClientStorage");
-                _client= new FoldingClient(new DriveStorageDetails()
+                return new FoldingClient(new DriveStorageDetails()
                                                                 {
                                                                     Name = resource.Name,
                                                                     RootPath = resource.RootPath
@@ -325,14 +328,14 @@ namespace AtHomeWebRole
             }
             else
             {
-                _client = new FoldingClient(new DriveStorageDetails()
+                return new FoldingClient(new DriveStorageDetails()
                                                                 {
                                                                     Name="TEMP",
-                                                                    RootPath=Path.GetTempPath(),
+                                                                    RootPath=HttpContext.Current.Server.MapPath("/"),
                                                                 },
-                                                                new RavenDBAtHomeClientDataRepository());
+                                                                new MongoAtHomeDataRepository());
             }
-            return _client;
+            return null;
         }
 
     }

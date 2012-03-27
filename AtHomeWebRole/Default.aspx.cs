@@ -8,6 +8,7 @@ using System.Net;
 using System.Web.Script.Serialization;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace AtHomeWebRole
 {
@@ -21,6 +22,8 @@ namespace AtHomeWebRole
         {
             if (ApplicationSettings.RunningOnAzure)
                 _clientDataRepo = new AzureAtHomeClientDataRepository(ApplicationSettings.DataConnectionString);
+            else
+                _clientDataRepo = new MongoAtHomeDataRepository();
         }
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -42,7 +45,7 @@ namespace AtHomeWebRole
                 } 
 
                 // if there's a record in client table, redirect to status page
-                if (FoldingClientFactory.GetFoldingClient().Identity!= null)
+                if (FoldingClientFactory.CreateFoldingClient().Identity!= null)
                     Response.Redirect("/Status.aspx", true);
 
                 if (!IsPostBack)
@@ -89,7 +92,7 @@ namespace AtHomeWebRole
                 else
                     pnlAccountError.Visible = true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 pnlAccountError.Visible = true;
             }
@@ -107,6 +110,21 @@ namespace AtHomeWebRole
                             Request.ServerVariables["SERVER_NAME"]);
             _clientDataRepo.Save(clientInfo);
             // redirect to the status page
+            if (!ApplicationSettings.RunningOnAzure)
+            {
+                Task task = Task.Factory.StartNew(() =>
+                     {
+                         try
+                         {
+                             FoldingClient client = FoldingClientFactory.CreateFoldingClient();
+                             client.Launch();
+                         }
+                         catch (Exception ex)
+                         {
+                             System.Diagnostics.Trace.TraceError(ex.Message);
+                         }
+                     });
+            }
             Response.Redirect("/Status.aspx");
 
         }

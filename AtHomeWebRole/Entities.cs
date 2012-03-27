@@ -2,11 +2,15 @@
 using System.Linq;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.StorageClient;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace Entities
 {
     public class ClientInformation : TableServiceEntity
     {
+        [BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
+        public string ID { get; set; }
         public String UserName { get; set; }
         public String Team { get; set; }
         public String ServerName { get; set; }
@@ -32,6 +36,8 @@ namespace Entities
     }
     public class WorkUnit : TableServiceEntity
     {
+        [BsonId(IdGenerator = typeof(StringObjectIdGenerator))]
+        public string ID { get; set; }
         public String Name { get; set; }
         public String Tag { get; set; }
         public String InstanceId { get; set; }

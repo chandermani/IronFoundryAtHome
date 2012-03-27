@@ -7,6 +7,7 @@ using System.Web.SessionState;
 using Microsoft.WindowsAzure;
 using System.IO;
 using Entities;
+using System.Threading.Tasks;
 
 namespace AtHomeWebRole
 {
@@ -25,13 +26,24 @@ namespace AtHomeWebRole
 
         private void StartClient()
         {
-            FoldingClient client = FoldingClientFactory.GetFoldingClient();
-            client.Launch();
+            FoldingClient client = FoldingClientFactory.CreateFoldingClient();
+            Task task = Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    if (client.Identity == null) return;
+                    client.Launch();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Trace.TraceError(ex.Message);
+                }
+            });
         }
 
         private void CopyAtHomeBinaries(DriveStorageDetails storageDetails)
         {
-            string copyAtHomeBinariesFrom = Server.MapPath("/client");
+            string copyAtHomeBinariesFrom = Server.MapPath("/binaries");
             string copyAtHomeBinariesTo = string.Format("{0}{1}", storageDetails.RootPath, "client");
             if (!Directory.Exists(copyAtHomeBinariesTo))
                 Directory.CreateDirectory(copyAtHomeBinariesTo);
@@ -39,6 +51,7 @@ namespace AtHomeWebRole
             {
                 String fileName = System.IO.Path.GetFileName(file);
                 String destFile = System.IO.Path.Combine(copyAtHomeBinariesTo, fileName);
+                if (File.Exists(destFile)) continue;
                 System.IO.File.Copy(file, destFile, true);
             }
         }
@@ -48,7 +61,7 @@ namespace AtHomeWebRole
             return new DriveStorageDetails()
             {
                 Name = "Temp",
-                RootPath = Path.GetTempPath(),
+                RootPath = Server.MapPath("/"),
             };
         }
 

@@ -18,7 +18,7 @@ namespace AtHomeWebRole
 
             //copy files to temp storage
             String rootPath = Environment.GetEnvironmentVariable("RoleRoot");
-            String sourcePath = String.Format(@"{0}\approot\bin\client", rootPath);
+            String sourcePath = String.Format(@"{0}\approot\bin\binaries", rootPath);
 
             // To copy a folder's contents to a new location:
             // Create a new target folder, if necessary.
@@ -48,11 +48,11 @@ namespace AtHomeWebRole
             {
                 try
                 {
-                    ClientInformation clientInfo = FoldingClientFactory.GetFoldingClient().Identity;
+                    ClientInformation clientInfo = FoldingClientFactory.CreateFoldingClient().Identity;
                     if (clientInfo != null)
                     {
                         var localAzureStorage = RoleEnvironment.GetLocalResource("ClientStorage");
-                        FoldingClient client = FoldingClientFactory.GetFoldingClient();
+                        FoldingClient client = FoldingClientFactory.CreateFoldingClient();
                         client.Launch();
                         break;
                     }

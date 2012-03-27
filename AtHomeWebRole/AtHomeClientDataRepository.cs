@@ -9,15 +9,7 @@ using System.Diagnostics;
 
 namespace AtHomeWebRole
 {
-    public interface IAtHomeClientDataRepository
-    {
-        void Save(ClientInformation clientInfo);
-        void Save(WorkUnit workUnit);
-        void Update(WorkUnit workUnit);
-        ClientInformation LoadClientInformation();
-        WorkUnit GetWorkUnit(string key, string subKey);
-        void Clear();
-    }
+    
 
     public class AzureAtHomeClientDataRepository : IAtHomeClientDataRepository
     {
@@ -110,40 +102,11 @@ namespace AtHomeWebRole
                             select w).FirstOrDefault<WorkUnit>();
             return workUnit;
         }
-    }
 
-    public class RavenDBAtHomeClientDataRepository : IAtHomeClientDataRepository
-    {
 
-        public void Save(ClientInformation clientInfo)
+        public List<WorkUnit> AllWorkUnits()
         {
-            throw new NotImplementedException();
-        }
-
-        public ClientInformation LoadClientInformation()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Clear()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Save(WorkUnit workUnit)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        public void Update(WorkUnit workUnit)
-        {
-            throw new NotImplementedException();
-        }
-
-        public WorkUnit GetWorkUnit(string key, string subKey)
-        {
-            throw new NotImplementedException();
+            return _dataContext.WorkUnits.ToList();
         }
     }
 }

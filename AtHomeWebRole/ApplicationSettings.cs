@@ -14,6 +14,8 @@ namespace AtHomeWebRole
         {
             if (RunningOnAzure)
                 _settingsProvider = new AzureSettingsProvider();
+            else
+                _settingsProvider = new AppSettingsProvider();
         }
 
         public static string DataConnectionString
@@ -52,9 +54,8 @@ namespace AtHomeWebRole
             {
                 try
                 {
-                    if (_runningOnAzure.HasValue)
-                        return _runningOnAzure.Value;
-                    _runningOnAzure = RoleEnvironment.IsAvailable;
+                    if (!_runningOnAzure.HasValue)
+                        _runningOnAzure = RoleEnvironment.IsAvailable;
                 }
                 catch
                 {
@@ -63,8 +64,6 @@ namespace AtHomeWebRole
                 return _runningOnAzure.Value;
             }
         }
-
-        private static string _instanceId;
 
         public static string InstanceId
         {
@@ -78,13 +77,23 @@ namespace AtHomeWebRole
                 {
                     return Environment.MachineName;
                 }
-                return _instanceId;
             }
         }
+
+
+        public static string MongoDBConnectionString
+        {
+            get
+            {
+                return _settingsProvider.GetSetting("MongoDBConnectionString");
+            }
+            
+        }
+        
         
     }
 
-    public abstract class AppSettingsProvider
+    public class AppSettingsProvider
     {
         public virtual string GetSetting(string name)
         {
