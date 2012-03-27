@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "AzureAtHome", "AzureAtHome\AzureAtHome.ccproj", "{C8CBCAA7-CC78-44FA-B3B7-1F98F1B29E36}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtHomeWebRole", "AtHomeWebRole\AtHomeWebRole.csproj", "{3B350A6F-8260-485A-B03F-E140310B2B19}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoldingClientMock", "FoldingClientMock\FoldingClientMock.csproj", "{920A015F-77CE-408D-B154-3EE69692EBB5}"
@@ -17,16 +15,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C8CBCAA7-CC78-44FA-B3B7-1F98F1B29E36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C8CBCAA7-CC78-44FA-B3B7-1F98F1B29E36}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C8CBCAA7-CC78-44FA-B3B7-1F98F1B29E36}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{C8CBCAA7-CC78-44FA-B3B7-1F98F1B29E36}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{C8CBCAA7-CC78-44FA-B3B7-1F98F1B29E36}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{C8CBCAA7-CC78-44FA-B3B7-1F98F1B29E36}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C8CBCAA7-CC78-44FA-B3B7-1F98F1B29E36}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C8CBCAA7-CC78-44FA-B3B7-1F98F1B29E36}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{C8CBCAA7-CC78-44FA-B3B7-1F98F1B29E36}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{C8CBCAA7-CC78-44FA-B3B7-1F98F1B29E36}.Release|x86.ActiveCfg = Release|Any CPU
 		{3B350A6F-8260-485A-B03F-E140310B2B19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3B350A6F-8260-485A-B03F-E140310B2B19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B350A6F-8260-485A-B03F-E140310B2B19}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
