@@ -5,8 +5,8 @@
     <div>
         <div id="menucontainer">
             <ul id="menu">
-                <li><a href="http://distributedcomputing.cloudapp.net/stats"   target="_blank">team stats</a></li>
-                <li><a href="http://distributedcomputing.cloudapp.net/visual" target="_blank">world
+                <li><a href="http://fah-web.stanford.edu/cgi-bin/main.py?qtype=teampage&teamnum=217179"   target="_blank">team stats</a></li>
+                <li><a href="#" target="_blank">world
                     map</a></li>
             </ul>
         </div>
