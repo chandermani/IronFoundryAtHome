@@ -85,6 +85,8 @@ namespace AtHomeWebRole
         {
             get
             {
+                if (!string.IsNullOrEmpty(_settingsProvider.GetSetting("MONGOLAB_URI")))
+                    _settingsProvider.GetSetting("MONGOLAB_URI");
                 return _settingsProvider.GetSetting("MongoDBConnectionString");
             }
             
