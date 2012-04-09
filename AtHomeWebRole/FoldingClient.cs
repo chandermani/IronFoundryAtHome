@@ -9,6 +9,7 @@ using Entities;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.StorageClient;
+using NLog;
 
 namespace AtHomeWebRole
 {
@@ -35,6 +36,8 @@ namespace AtHomeWebRole
 
     public class FoldingClient
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         private IAtHomeClientDataRepository _clientDataRepo;
         public ClientInformation Identity { get; private set; }
         public DriveStorageDetails StorageToUse { get; private set; }
@@ -232,6 +235,7 @@ namespace AtHomeWebRole
         {
 
             // write the configuration file with user information
+            logger.Info("write the configuration file with user information");
             WriteConfigFile();
 
             // get path to the Folding@home client application
@@ -250,6 +254,7 @@ namespace AtHomeWebRole
                 pollingInterval = 15;
             }
 
+            logger.Info("Polling Interval is {0}", pollingInterval);
             // 
             // setup process
             ProcessStartInfo startInfo = new ProcessStartInfo()
@@ -264,13 +269,17 @@ namespace AtHomeWebRole
             // loop while there's a client info record in Azure table storage
             while (this.Identity != null)
             {
+                logger.Info("Inside the infinite loop that checks Identity");
+
 
                 // start a work unit
                 using (Process exeProcess = Process.Start(startInfo))
                 {
-
+                    logger.Info("Started the client process.");
                     while (!exeProcess.HasExited)
                     {
+                        logger.Info("Inside the infinite loop that waits for client process to finish");
+
                         // get current status
                         FoldingClientStatus status = ReadStatusFile();
 
@@ -287,18 +296,22 @@ namespace AtHomeWebRole
                     // when work unit completes successfully
                     if (exeProcess.ExitCode == 0)
                     {
+                        logger.Info("Client Process exited successfully.");
+
                         // make last update for completed role
                         FoldingClientStatus status = ReadStatusFile();
 
                         if (!status.HasParseError)
                         {
+                            logger.Info("Parse and store results.");
+
                             UpdateLocalStatus(status);
                             UpdateServerStatus(status);
                         }
                     }
                     else
                     {
-                        Trace.TraceError(String.Format("Folding@home process has exited with code {0}",
+                        logger.Error(String.Format("Folding@home process has exited with code {0}",
                             exeProcess.ExitCode));
 
                         // this will leave orphan progress record in the Azure table
